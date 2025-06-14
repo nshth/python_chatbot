@@ -1,2 +1,1 @@
-# python_chatbot
-This project is a simple chatbot built in Python. It will help users interact using natural language.
+This project is a simple chatbot built using Python, TensorFlow, and NLTK. It uses a neural network to classify user inputs into predefined intents and provides appropriate responses based on the detected intent.

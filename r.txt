@@ -1,0 +1,171 @@
+changes:
+1. remove words using regex
+2. preprocess in a cleaner way
+3. convert to np array 52,53 not on fit()
+4. save the file in .keras file format
+
+
+tag: A label for the intent.
+patterns: Example user inputs.
+responses: Possible responses the bot can give
+
+•      WordNetLemmatizer — Uses vocabulary and grammar rules to get the base word (e.g., “running” → “run”,
+              “better” → “good”) — slower but more accurate.
+•      stemming -- Chops off word endings (e.g., “running” → “run”, “better” → “bett”) — fast but can be messy
+
+extend - adds all the elements of an iterable to the end of the list [1,2,4,5,6]
+append - adds a single element. expect 1 arg /nested [1,2,([4,5,6])]
+
+tokenize=
+lemmetize=
+word_tokenize()=>
+       import nltk
+       from nltk.tokenize import word_tokenize
+
+       nltk.download('punkt_tab')
+       //punkt enables sentence and word tokenization in NLTK
+       text = "Ayush and Smrita are beautiful couple"
+       tokens = word_tokenize(text)
+       print(tokens)
+       Ayush 
+
+TypeError: list.append() takes exactly one argument (2 given)
+       documents.append(word_list, intent['tag']) =>>
+       documents.append((word_list, intent['tag'])) rigth!!
+
+split() → breaks into words
+set() → removes duplicates
+sorted() → sorts alphabetically
+
+(line-27) lemmatizer.lemmatize() works on one word at a time, not a list.
+
+list comprehension -> newlist = [x for x in fruits if "a" in x] no bracket neaded 
+
+=>You do all the tokenizing, lemmatizing, class-tag collecting once, save with pickle, and skip the whole process next time 
+       (preprocessing-
+       You're cleaning and preparing raw text so it's in a form your machine learning model can actually work with.)
+
+->preprocessing
+1.lem each word and ignore char same with class 
+2.sort set
+3.pickling both and saving into file x.pkl
+
+
+1.initialize an empty list called training
+2.create a list of zero with legnth = classes and sort it out
+3.sort it ina var called output_epmty
+4.loop through each doc in documents and initialize an empty list called bag
+5.tokenize each word in documents and lemmetize it 
+
+doubt - didnt understand why we're lemmatizing in BOW
+       (loosu avanku athn apd seithu irukan)
+
+words: This is your vocabulary. A list of all unique lemmatized words across all sentences.
+document[0]: This is the tokenized version of ONE sentence, like: ["hi", "how", "are", "you"].
+
+//type of BOW
+🔢 Count BoW = Good for simple text classification. 
+🟢 Binary Bag of Words (BoW) = Used when presence matters more than frequency. 
+⚖️ TF-IDF (Term Frequency-Inverse Document Frequency)= Each word gets a weighted score based on how important
+  it is
+
+You're slapping together the BoW input vector (bag) and the output label vector (outputRow) into one flat list and saving it in training.
+
+label encoding =  Turn words into numbers.
+
+r""	Raw string	Treats backslashes (\) as literal characters (useful for regex or file paths).
+f""	Formatted string (f-string)	Lets you embed variables or expressions inside {}.
+b""	Byte string	For binary data (you won’t need this much unless you're deep in data/networking).
+
+working with ipynb file 
+venv -> ipykernel -> select that venv as a kernel
+
+why we are using bag of words in words and word patterns?
+       eneku theringe words => vocabulary - Words t+l
+       ex sentence i train it with => wordPatterns 
+
+The way you change a sentence into a vector is by using the Bag of Words (BoW) method.
+
+words = your vocabulary (all unique words)
+wordPatterns = tokens from one training sentence
+BoW creates a vector for each sentence, where each position is 1 if the vocabulary word is present in the sentence, 0 if not.
+
+Example:
+If your vocabulary is ["hello", "world", "bye"] and your sentence is "hello world",
+the BoW vector is [1, 1, 0].
+
+Label encoding = text → integer (used for ML models that can handle integers as class labels).
+one hot encoding -> suitable to classification labels
+
+need to tell Python exactly where in the outputRow to place the 1, and that's what classes.index(document[1]) does
+
+bag + opRow
+need that because most ML models (like with TensorFlow or PyTorch) expect:
+One big flat vector per training sample
+Not a list inside a list, not a tuple, and definitely not a set
+
+=>Follows the ETL + TensorFlow input pipeline approach in a machine learning chatbot context.
+
+Each vector length = total unique words count.
+
+len(trainX[0]) == 4   # same as len(words)  
+len(trainY[0]) == 2   # same as len(classes)
+
+Keras expects input_shape to always be a tuple
+input_shape=(len(words),)
+
+Weight = importance of that input.
+activation = how each neuron should work
+
+Sigmoid: shares everything — tiny or big signals, always outputs a value between 0 and 1. So even weak signals get passed along, just quietly.
+ReLU: super strict — it blocks all negative signals by turning them into zero, only passes positive ones.
+
+An optimizer is used to reduce the loss function value so that the predicted value and the exact value matches
+
+Loss = one person’s mistake
+Cost = how badly the whole class did on the test
+
+momentum = which helps the optimizer remember previous directions to avoid local minima
+
+A “data point” is just one training example—say, one image with its correct label.
+0.9 momentum is like the default hyp
+When you have momentum on, Nesterov is like your model checking the road before it takes a step, making sure it’s still on the right path before committing
+Metrics = Accuracy just tells you how often your model guesses the right class.
+       You can absolutely track others: precision, recall, F1-score, AUC — they each tell you different things depending on your problem.
+
+model.compile() sets the training condition
+
+| Problem Type                  | Output Activation        | Loss Function              | Example Use Case                                       |
+| ----------------------------- | ------------------------ | -------------------------- | ------------------------------------------------------ |
+| **Binary classification**     | `sigmoid`                | `binary_crossentropy`      | Spam or not spam                                       |
+| **Multi-class (1 label)**     | `softmax`                | `categorical_crossentropy` | Chatbot intent (one correct tag)                       |
+| **Multi-class (multi-label)** | `sigmoid`                | `binary_crossentropy`      | Multiple tags possible (like "news", "sports", "tech") |
+| **Regression**                | `linear` (no activation) | `mean_squared_error`       | Predicting a number (like price)                       |
+
+(didnt get the sgd and model.compile completely)
+sgd-
+model.compile is nothing but a set of setup instruction like loss func and optimizer and the metrics of Accuracy and more
+
+SGD loves small batches — 5 is good because it gives noisy, more frequent updates.
+Momentum + small batches = balance between chaos (SGD alone) and memory (momentum).
+200 epochs with small batches = model trains many, many times, helping it learn patterns well.
+Learning rate matters here — 0.01 is small, safe, but slow. Works well with high epochs.
+
+Logging your training output to a file is super useful when you're building your chatbot
+
+epchos is how many times to iterate over the dataset
+
+100 samples / 5 per batch = 20 batches
+So 20 times in that one epoch, the model:
+Grabs a batch of 5
+Predicts
+Calculates loss
+Optimizes weights (thanks to SGD)
+
+def get_length(e):
+    return len(e)
+= lambda e: len(e)
+
+Behind the scenes, Python is like:
+for item in results:
+    value_to_sort_by = lambda(item) 
