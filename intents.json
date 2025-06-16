@@ -22,6 +22,11 @@
          "responses": ["nothing"],
          "context": [""]
         },
+        {"tag": "exit",
+         "patterns": ["exit", "quit", "stop", "end chat", "terminate", "close"],
+         "responses": ["Exiting now...", "Goodbye!", "Chat terminated", "Have a great day!"],
+         "context": [""]
+        },
         {
         "tag": "fallback",
         "patterns": [],
